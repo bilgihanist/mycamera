@@ -1,38 +1,180 @@
-# mycamera
+# Kamera Kontrol Platformu
 
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+Modern, güvenli ve ölçeklenebilir kamera yönetim sistemi. Canlı cihaz takibi, şifre yönetimi ve bayi destekli kurulumlar için tek panel.
 
-## Getting Started
+## 🚀 Özellikler
 
-First, run the development server:
+- **Canlı İzleme**: Kameralarınızı gerçek zamanlı olarak izleyin ve kontrol edin
+- **Güvenli Erişim**: Rol bazlı erişim kontrolü ile güvenli yönetim
+- **Kullanıcı Yönetimi**: Admin paneli ile kullanıcıları kolayca yönetin
+- **Analitik**: Detaylı raporlar ve performans analizi
+- **Responsive Tasarım**: Mobil ve masaüstü uyumlu modern arayüz
+- **Dark Mode**: Karanlık ve aydınlık tema desteği
 
+## 🛠️ Teknolojiler
+
+- **Frontend**: Next.js 15, React 19, TypeScript
+- **Styling**: Tailwind CSS 4
+- **Backend**: Supabase (PostgreSQL, Auth, Real-time)
+- **State Management**: Zustand
+- **Authentication**: JWT + httpOnly cookies
+- **Icons**: Lucide React
+- **Notifications**: Sonner
+- **Theme**: next-themes
+
+## 📦 Kurulum
+
+1. Projeyi klonlayın:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone <repository-url>
+cd mycamera
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Bağımlılıkları yükleyin:
+```bash
+npm install
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+3. Environment variables dosyasını oluşturun:
+```bash
+cp .env.example .env.local
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+4. `.env.local` dosyasını düzenleyin:
+```env
+NEXT_PUBLIC_SUPABASE_URL=https://YOUR-PROJECT.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=XXXX
+JWT_SECRET=super-long-random-secret-key-for-jwt-signing
+COOKIE_NAME=app_session
+COOKIE_DOMAIN=localhost
+NODE_ENV=development
+```
 
-## Learn More
+5. Geliştirme sunucusunu başlatın:
+```bash
+npm run dev
+```
 
-To learn more about Next.js, take a look at the following resources:
+## 🗄️ Veritabanı Yapısı
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Supabase Tabloları
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```sql
+-- Kullanıcı profilleri
+CREATE TABLE profiles (
+  id UUID REFERENCES auth.users(id) PRIMARY KEY,
+  name TEXT NOT NULL,
+  company TEXT,
+  role TEXT CHECK (role IN ('admin', 'vendor', 'client')) DEFAULT 'client',
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
 
-## Deploy on Vercel
+-- Cihazlar
+CREATE TABLE devices (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  name TEXT NOT NULL,
+  brand TEXT NOT NULL,
+  model TEXT NOT NULL,
+  ip_address INET NOT NULL,
+  location TEXT NOT NULL,
+  status TEXT CHECK (status IN ('online', 'offline')) DEFAULT 'offline',
+  user_id UUID REFERENCES auth.users(id),
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+-- Olaylar/Loglar
+CREATE TABLE events (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  device_id UUID REFERENCES devices(id),
+  event_type TEXT NOT NULL,
+  message TEXT NOT NULL,
+  severity TEXT CHECK (severity IN ('info', 'warning', 'error')) DEFAULT 'info',
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 🔐 Güvenlik
+
+- **JWT Authentication**: Güvenli token tabanlı kimlik doğrulama
+- **Role-based Access Control**: Admin, Bayi ve Müşteri rolleri
+- **httpOnly Cookies**: XSS saldırılarına karşı koruma
+- **Input Validation**: Zod ile güçlü veri doğrulama
+- **Middleware Protection**: Route bazlı erişim kontrolü
+
+## 📱 Sayfalar
+
+- **Ana Sayfa** (`/`): Landing page ve özellik tanıtımı
+- **Giriş** (`/login`): Kullanıcı girişi
+- **Kayıt** (`/register`): Yeni kullanıcı kaydı
+- **Dashboard** (`/dashboard`): Ana kontrol paneli
+- **Cihazlar** (`/products`): Kamera ve cihaz yönetimi
+- **Admin Panel** (`/admin`): Sistem yönetimi
+- **Kullanıcılar** (`/admin/users`): Kullanıcı yönetimi
+
+## 🚀 Deployment
+
+### Vercel (Önerilen)
+
+1. Projeyi GitHub'a push edin
+2. Vercel'e bağlayın
+3. Environment variables'ları ekleyin
+4. Deploy edin
+
+### Diğer Platformlar
+
+- **Netlify**: Static export ile
+- **Railway**: Full-stack deployment
+- **DigitalOcean**: App Platform
+
+## 🔧 Geliştirme
+
+### Scripts
+
+```bash
+npm run dev          # Geliştirme sunucusu
+npm run build        # Production build
+npm run start        # Production sunucusu
+npm run lint         # ESLint kontrolü
+```
+
+### Proje Yapısı
+
+```
+src/
+├── lib/             # Utility fonksiyonları
+│   ├── supabase.ts  # Supabase client
+│   ├── jwt.ts       # JWT işlemleri
+│   ├── cookies.ts   # Cookie yönetimi
+│   └── utils.ts     # Genel utilities
+├── store/           # Zustand store
+│   └── ui.ts        # UI state
+└── middleware.ts    # Route koruma
+
+app/
+├── (auth)/          # Auth sayfaları
+├── api/             # API routes
+├── admin/           # Admin paneli
+├── dashboard/       # Dashboard
+└── products/        # Cihaz yönetimi
+```
+
+## 📄 Lisans
+
+Bu proje MIT lisansı altında lisanslanmıştır.
+
+## 🤝 Katkıda Bulunma
+
+1. Fork edin
+2. Feature branch oluşturun (`git checkout -b feature/amazing-feature`)
+3. Commit edin (`git commit -m 'Add amazing feature'`)
+4. Push edin (`git push origin feature/amazing-feature`)
+5. Pull Request oluşturun
+
+## 📞 Destek
+
+Herhangi bir sorunuz için:
+- GitHub Issues
+- Email: support@example.com
+- Dokümantasyon: [docs.example.com](https://docs.example.com)
