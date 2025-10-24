@@ -40,16 +40,6 @@ npm install
 cp .env.example .env.local
 ```
 
-4. `.env.local` dosyasını düzenleyin:
-```env
-NEXT_PUBLIC_SUPABASE_URL=https://YOUR-PROJECT.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=XXXX
-JWT_SECRET=super-long-random-secret-key-for-jwt-signing
-COOKIE_NAME=app_session
-COOKIE_DOMAIN=localhost
-NODE_ENV=development
-```
-
 5. Geliştirme sunucusunu başlatın:
 ```bash
 npm run dev
