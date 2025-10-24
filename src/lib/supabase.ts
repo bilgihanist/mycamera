@@ -1,5 +1,5 @@
 import { createBrowserClient, createServerClient } from '@supabase/ssr'
-import { cookies, headers } from 'next/headers'
+import { cookies } from 'next/headers'
 
 export function createClientBrowser() {
   return createBrowserClient(
@@ -8,8 +8,9 @@ export function createClientBrowser() {
   )
 }
 
-export function createClientServer() {
-  const cookieStore = cookies()
+export async function createClientServer() {
+  const cookieStore = await cookies()
+  
   return createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -17,11 +18,12 @@ export function createClientServer() {
       cookies: {
         get(name: string) {
           return cookieStore.get(name)?.value
-        }
-      },
-      headers: {
-        get(name: string) {
-          return headers().get(name) ?? undefined
+        },
+        set(name: string, value: string, options: Record<string, unknown>) {
+          cookieStore.set(name, value, options)
+        },
+        remove(name: string, options: Record<string, unknown>) {
+          cookieStore.set(name, '', { ...options, maxAge: 0 })
         }
       }
     }

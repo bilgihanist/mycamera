@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
-import { createClientServer } from '@/lib/supabase'
-import { signAppJwt } from '@/lib/jwt'
-import { setSessionCookie } from '@/lib/cookies'
+import { createClientServer } from '@/src/lib/supabase'
+import { signAppJwt } from '@/src/lib/jwt'
+import { setSessionCookie } from '@/src/lib/cookies'
 import { z } from 'zod'
 
 const schema = z.object({ 
@@ -14,7 +14,7 @@ export async function POST(req: Request) {
   const parse = schema.safeParse(body)
   if (!parse.success) return new NextResponse('Geçersiz veri', { status: 400 })
 
-  const supabase = createClientServer()
+  const supabase = await createClientServer()
   const { data, error } = await supabase.auth.signInWithPassword(parse.data)
   if (error || !data.user) return new NextResponse('Kimlik doğrulama başarısız', { status: 401 })
 
@@ -22,6 +22,6 @@ export async function POST(req: Request) {
   // Basit örnekte default vendor verelim.
   const role: 'admin'|'vendor'|'client' = 'vendor'
   const token = await signAppJwt({ sub: data.user.id, role })
-  setSessionCookie(token)
+  await setSessionCookie(token)
   return NextResponse.json({ ok: true })
 }

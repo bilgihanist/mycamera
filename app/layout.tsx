@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { ThemeProvider } from 'next-themes'
-import { Toaster } from 'sonner'
+import { Providers } from './providers'
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -15,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Kamera Kontrol Platformu",
-  description: "Canlı cihaz takibi, şifre yönetimi ve bayi destekli kurulumlar için tek panel",
+  title: "CRM Platformu",
+  description: "Modern müşteri ilişkileri yönetim sistemi",
 };
 
 export default function RootLayout({
@@ -29,10 +28,9 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+        <Providers>
           {children}
-          <Toaster richColors position="top-right" />
-        </ThemeProvider>
+        </Providers>
       </body>
     </html>
   );

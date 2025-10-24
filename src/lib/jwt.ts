@@ -10,7 +10,7 @@ export type AppJwtPayload = {
 }
 
 export async function signAppJwt(payload: AppJwtPayload, expiresIn = '30d') {
-  return await new SignJWT(payload as any)
+  return await new SignJWT(payload)
     .setProtectedHeader({ alg: 'HS256' })
     .setIssuedAt()
     .setExpirationTime(expiresIn)

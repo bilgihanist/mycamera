@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { createClientServer } from '@/lib/supabase'
+import { createClientServer } from '@/src/lib/supabase'
 import { z } from 'zod'
 
 const schema = z.object({ 
@@ -14,7 +14,7 @@ export async function POST(req: Request) {
   const parse = schema.safeParse(body)
   if (!parse.success) return new NextResponse('Geçersiz veri', { status: 400 })
 
-  const supabase = createClientServer()
+  const supabase = await createClientServer()
   const { data, error } = await supabase.auth.signUp({
     email: parse.data.email,
     password: parse.data.password,

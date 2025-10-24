@@ -2,6 +2,21 @@
 import { useState } from 'react'
 import { toast } from 'sonner'
 import Link from 'next/link'
+import { 
+  Box, 
+  Container, 
+  VStack, 
+  Text, 
+  Input, 
+  InputGroup, 
+  InputRightElement, 
+  Button, 
+  IconButton,
+  useColorModeValue,
+  FormControl,
+  FormLabel,
+  Icon
+} from '@chakra-ui/react'
 import { Eye, EyeOff, UserPlus } from 'lucide-react'
 
 export default function RegisterPage() {
@@ -15,6 +30,9 @@ export default function RegisterPage() {
   const [loading, setLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+
+  const bg = useColorModeValue('gray.50', 'gray.900')
+  const cardBg = useColorModeValue('white', 'gray.800')
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -39,131 +57,132 @@ export default function RegisterPage() {
       if (!res.ok) throw new Error(await res.text())
       toast.success('Kayıt başarılı! Giriş yapabilirsiniz.')
       window.location.href = '/login'
-    } catch (err: any) {
-      toast.error(err.message || 'Kayıt hatası')
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : 'Kayıt hatası')
     } finally { 
       setLoading(false) 
     }
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8">
-          <div className="text-center mb-8">
-            <UserPlus className="w-12 h-12 text-blue-600 mx-auto mb-4" />
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Kayıt Ol</h2>
-            <p className="text-gray-600 dark:text-gray-300 mt-2">
-              Yeni hesap oluşturun
-            </p>
-          </div>
+    <Box minH="100vh" bg={bg} display="flex" alignItems="center" justifyContent="center" p={4}>
+      <Container maxW="md">
+        <Box bg={cardBg} rounded="2xl" shadow="xl" p={8}>
+          <VStack spacing={8} align="center" mb={8}>
+            <Icon as={UserPlus} w={12} h={12} color="brand.500" />
+            <VStack spacing={2}>
+              <Text fontSize="2xl" fontWeight="bold">
+                Kayıt Ol
+              </Text>
+              <Text color="gray.600" textAlign="center">
+                Yeni hesap oluşturun
+              </Text>
+            </VStack>
+          </VStack>
           
-          <form onSubmit={onSubmit} className="space-y-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Ad Soyad
-              </label>
-              <input 
-                required 
-                type="text"
-                className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-3 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
-                placeholder="Adınız ve soyadınız" 
-                value={formData.name} 
-                onChange={e=>setFormData({...formData, name: e.target.value})} 
-              />
-            </div>
-            
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Şirket
-              </label>
-              <input 
-                type="text"
-                className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-3 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
-                placeholder="Şirket adı (opsiyonel)" 
-                value={formData.company} 
-                onChange={e=>setFormData({...formData, company: e.target.value})} 
-              />
-            </div>
-            
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                E-posta
-              </label>
-              <input 
-                required 
-                type="email"
-                className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-3 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
-                placeholder="ornek@email.com" 
-                value={formData.email} 
-                onChange={e=>setFormData({...formData, email: e.target.value})} 
-              />
-            </div>
-            
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Şifre
-              </label>
-              <div className="relative">
-                <input 
-                  required 
-                  className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-3 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent pr-12" 
-                  placeholder="Şifrenizi girin" 
-                  type={showPassword ? "text" : "password"} 
-                  value={formData.password} 
-                  onChange={e=>setFormData({...formData, password: e.target.value})} 
+          <form onSubmit={onSubmit}>
+            <VStack spacing={6}>
+              <FormControl>
+                <FormLabel>Ad Soyad</FormLabel>
+                <Input
+                  required
+                  type="text"
+                  placeholder="Adınız ve soyadınız"
+                  value={formData.name}
+                  onChange={(e) => setFormData({...formData, name: e.target.value})}
                 />
-                <button
-                  type="button"
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
-                  onClick={() => setShowPassword(!showPassword)}
-                >
-                  {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                </button>
-              </div>
-            </div>
-            
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Şifre Tekrar
-              </label>
-              <div className="relative">
-                <input 
-                  required 
-                  className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-3 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent pr-12" 
-                  placeholder="Şifrenizi tekrar girin" 
-                  type={showConfirmPassword ? "text" : "password"} 
-                  value={formData.confirmPassword} 
-                  onChange={e=>setFormData({...formData, confirmPassword: e.target.value})} 
+              </FormControl>
+              
+              <FormControl>
+                <FormLabel>Şirket</FormLabel>
+                <Input
+                  type="text"
+                  placeholder="Şirket adı (opsiyonel)"
+                  value={formData.company}
+                  onChange={(e) => setFormData({...formData, company: e.target.value})}
                 />
-                <button
-                  type="button"
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
-                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                >
-                  {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                </button>
-              </div>
-            </div>
-            
-            <button 
-              disabled={loading} 
-              className="w-full rounded-lg bg-blue-600 text-white py-3 font-semibold hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-            >
-              {loading ? 'Kayıt oluşturuluyor...' : 'Kayıt Ol'}
-            </button>
+              </FormControl>
+              
+              <FormControl>
+                <FormLabel>E-posta</FormLabel>
+                <Input
+                  required
+                  type="email"
+                  placeholder="ornek@email.com"
+                  value={formData.email}
+                  onChange={(e) => setFormData({...formData, email: e.target.value})}
+                />
+              </FormControl>
+              
+              <FormControl>
+                <FormLabel>Şifre</FormLabel>
+                <InputGroup>
+                  <Input
+                    required
+                    type={showPassword ? 'text' : 'password'}
+                    placeholder="Şifrenizi girin"
+                    value={formData.password}
+                    onChange={(e) => setFormData({...formData, password: e.target.value})}
+                  />
+                  <InputRightElement>
+                    <IconButton
+                      aria-label={showPassword ? 'Şifreyi gizle' : 'Şifreyi göster'}
+                      icon={showPassword ? <EyeOff /> : <Eye />}
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setShowPassword(!showPassword)}
+                    />
+                  </InputRightElement>
+                </InputGroup>
+              </FormControl>
+              
+              <FormControl>
+                <FormLabel>Şifre Tekrar</FormLabel>
+                <InputGroup>
+                  <Input
+                    required
+                    type={showConfirmPassword ? 'text' : 'password'}
+                    placeholder="Şifrenizi tekrar girin"
+                    value={formData.confirmPassword}
+                    onChange={(e) => setFormData({...formData, confirmPassword: e.target.value})}
+                  />
+                  <InputRightElement>
+                    <IconButton
+                      aria-label={showConfirmPassword ? 'Şifreyi gizle' : 'Şifreyi göster'}
+                      icon={showConfirmPassword ? <EyeOff /> : <Eye />}
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    />
+                  </InputRightElement>
+                </InputGroup>
+              </FormControl>
+              
+              <Button
+                type="submit"
+                colorScheme="brand"
+                size="lg"
+                width="full"
+                isLoading={loading}
+                loadingText="Kayıt oluşturuluyor..."
+              >
+                Kayıt Ol
+              </Button>
+            </VStack>
           </form>
           
-          <div className="mt-6 text-center">
-            <p className="text-gray-600 dark:text-gray-300">
+          <Box mt={6} textAlign="center">
+            <Text color="gray.600">
               Zaten hesabınız var mı?{' '}
-              <Link href="/login" className="text-blue-600 hover:text-blue-700 font-semibold">
-                Giriş Yap
+              <Link href="/login">
+                <Text as="span" color="brand.500" fontWeight="semibold" _hover={{ color: 'brand.600' }}>
+                  Giriş Yap
+                </Text>
               </Link>
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
+            </Text>
+          </Box>
+        </Box>
+      </Container>
+    </Box>
   )
 }
